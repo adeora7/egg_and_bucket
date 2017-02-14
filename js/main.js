@@ -1,79 +1,68 @@
-var cwidth = 600;
-var cheight = 400;
+var canvasWidth = 600;
+var canvasHeight = 400;
+
 var egg = {
 	x: 285,
 	y: 20,
-	color: "#FFF",
+	yVel: 0,
 	width: 30,
-	yvelocity: 5,
-	falling : 0,
-	draw: function(){
+	color: "#fff",
+	draw: function() {
+		fill(this.color);
 		ellipse(this.x, this.y, this.width);
 	},
-	update: function(){
-		if(egg.y >= (cheight-this.width) ){
-			this.falling = 0;
+	update: function() {
+		this.y += this.yVel;
+		if (this.y + this.width >= canvasHeight) {
 			this.y = 20;
-		}
-		if(egg.falling == 1){
-			this.y += this.yvelocity;
+			this.yVel = 0;
 		}
 	}
-
-}
+};
 
 var bucket = {
-	color: "#FFF",
-	x: 0,
+	x: 20,
 	y: 350,
+	xVel: 5,
 	direction: 0,
+	width: 80,
 	height: 40,
-	width: 70,
-	xvelocity: 5,
-	draw: function(){
+	color: "#fff",
+	draw: function() {
+		fill(this.color);
 		rect(this.x, this.y, this.width, this.height);
 	},
-	update: function(){
-		if(this.x >= (cwidth - this.width) && this.direction == 0 ){
-			this.direction = 1;
-		} 
-		else if(this.x <= 0 && this.direction == 1){
-			this.direction = 0;
-		}
-		if(this.direction == 0){
-			this.x += this.xvelocity;
-		}
-		else{
-			this.x -= this.xvelocity;
+	update: function() {
+		this.x += this.xVel;
+		if (this.x + this.width > canvasWidth) {
+			this.xVel = -5;
+		} else if (this.x < 0) {
+			this.xVel = 5;
 		}
 	}
 }
-function check_collision(a, b){
-	return a.x + a.width >= b.x && a.x < b.x + b.width && a.y + a.width >= b.y && a.y < b.y + b.height;
+
+function setup() {
+	createCanvas(canvasWidth, canvasHeight);
+	background(45);
 }
 
-function setup(){
-	createCanvas(cwidth, cheight);
-	// background(45);
+function collision(a, b) {
+	return a.y + a.width > b.y && a.y < b.y + b.height && a.x + a.width > b.x && a.x < b.x + b.width;
 }
-
-function draw(){
+function draw() {
 	clear();
 	background(45);
-	fill(egg.color);
 	egg.draw();
-	bucket.draw();
-
-	if(keyIsDown(32) && egg.falling == 0){
-		egg.falling = 1;
-	}
-
 	egg.update();
-	bucket.update();	
-
-	if(check_collision(egg, bucket)){
-		console.log("success");
-		egg.falling = 0;
+	bucket.draw();
+	bucket.update();
+	if (keyIsDown(32)) {
+		egg.yVel = 5;
+	}
+	if (collision(egg, bucket)) {
+		console.log("success!");
 		egg.y = 20;
+		egg.yVel = 0;
 	}
 }
